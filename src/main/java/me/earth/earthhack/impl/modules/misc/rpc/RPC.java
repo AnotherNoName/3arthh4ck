@@ -5,40 +5,39 @@ import me.earth.earthhack.api.module.util.Category;
 import me.earth.earthhack.api.setting.Setting;
 import me.earth.earthhack.api.setting.settings.BooleanSetting;
 import me.earth.earthhack.api.setting.settings.StringSetting;
-import me.earth.earthhack.impl.event.events.client.ShutDownEvent;
-import me.earth.earthhack.impl.event.listeners.LambdaListener;
 import me.earth.earthhack.impl.util.discord.DiscordPresence;
 
 public class RPC extends Module
 {
+
     public final Setting<String> state =
-            register(new StringSetting("State", ":wave:"));
+            register(new StringSetting("State", "3arfH4ck :3"));
     public final Setting<String> details =
-            register(new StringSetting("Details", ":wave:"));
+            register(new StringSetting("Details", "3arfH4ck :3"));
+    public final Setting<String> largeImageKey =
+            register(new StringSetting("LargeImageKey", "earthhack"));
+    public final Setting<String> smallImageKey =
+            register(new StringSetting("SmallImageKey", "Da greatest"));
     public final Setting<Boolean> customDetails =
             register(new BooleanSetting("CustomDetails", false));
     public final Setting<Boolean> showIP =
             register(new BooleanSetting("ShowIP", false));
-
-    private final DiscordPresence presence = new DiscordPresence(this);
+    public final Setting<Boolean> froggers =
+            register(new BooleanSetting("Froggers", false));
 
     public RPC()
     {
         super("RPC", Category.Misc);
-        this.listeners.add(new LambdaListener<>(ShutDownEvent.class,
-                                                e -> presence.stop()));
     }
 
-    @Override
     protected void onEnable()
     {
-        presence.start();
+        DiscordPresence.start();
     }
 
-    @Override
     protected void onDisable()
     {
-        presence.stop();
+        DiscordPresence.stop();
     }
 
 }
