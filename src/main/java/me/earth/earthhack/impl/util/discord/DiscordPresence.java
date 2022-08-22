@@ -1,3 +1,4 @@
+// shitty fix for mobile players
 package me.earth.earthhack.impl.util.discord;
 
 import club.minnced.discord.rpc.DiscordEventHandlers;
