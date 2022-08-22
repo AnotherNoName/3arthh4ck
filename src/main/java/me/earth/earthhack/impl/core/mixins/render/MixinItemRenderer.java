@@ -73,7 +73,7 @@ public abstract class MixinItemRenderer
                     "FFLnet/minecraft/util/EnumHand;" +
                     "FLnet/minecraft/item/ItemStack;" +
                     "F)V"))
-    private void renderItemInFirstPersonHook(ItemRenderer itemRenderer,
+    public void renderItemInFirstPersonHook(ItemRenderer itemRenderer,
                                              AbstractClientPlayer player,
                                              float drinkOffset,
                                              float mapAngle,
@@ -110,7 +110,7 @@ public abstract class MixinItemRenderer
             target = "Lnet/minecraft/client/renderer/GlStateManager;" +
                      "pushMatrix()V",
             shift = At.Shift.AFTER))
-    private void pushMatrixHook(CallbackInfo info)
+    public void pushMatrixHook(CallbackInfo info)
     {
         if (VIEW_MODEL.isEnabled())
         {
@@ -223,6 +223,16 @@ public abstract class MixinItemRenderer
             }
         } else {
             renderArmFirstPerson(p_187456_1_, p_187456_2_, p_187456_3_);
+        }
+    }
+
+    @Inject(
+            method = "rotateArm",
+            at = @At("HEAD"),
+            cancellable = true)
+    public void rotateArmHook(float p_187458_1_, CallbackInfo ci) {
+        if (VIEW_MODEL.isEnabled() && VIEW_MODEL.get().noSway.getValue()) {
+            ci.cancel();
         }
     }
 
