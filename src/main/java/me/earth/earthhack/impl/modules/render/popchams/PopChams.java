@@ -7,16 +7,10 @@ import me.earth.earthhack.api.setting.settings.ColorSetting;
 import me.earth.earthhack.api.setting.settings.NumberSetting;
 import me.earth.earthhack.impl.managers.Managers;
 import me.earth.earthhack.impl.util.helpers.render.BlockESPModule;
-import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHandSide;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class PopChams extends BlockESPModule
 {
@@ -28,17 +22,13 @@ public class PopChams extends BlockESPModule
             register(new ColorSetting("Self-Color", new Color(80, 80, 255, 80)));
     public final ColorSetting selfOutline =
             register(new ColorSetting("Self-Outline", new Color(80, 80, 255, 255)));
-    public final BooleanSetting copyAnimations =
-            register(new BooleanSetting("Copy-Animations", true));
-    public final NumberSetting<Double> yAnimations =
-            register(new NumberSetting<>("Y-Animation", 0., -7., 7.));
     protected final Setting<Boolean> friendPop =
             register(new BooleanSetting("Friend-Pop", false));
     public final ColorSetting friendColor =
             register(new ColorSetting("Friend-Color", new Color(45, 255, 45, 80)));
     public final ColorSetting friendOutline =
             register(new ColorSetting("Friend-Outline", new Color(45, 255, 45, 255)));
-    private final List<PopData> popDataList = new ArrayList<>();
+    private final HashMap<String,PopData> popDataHashMap = new HashMap<>();
 
     public PopChams()
     {
@@ -50,12 +40,18 @@ public class PopChams extends BlockESPModule
         this.unregister(super.height);
     }
 
-    public List<PopData> getPopDataList() {
-        return popDataList;
+    @Override
+    protected void onEnable()
+    {
+        popDataHashMap.clear();
+    }
+
+    public HashMap<String, PopData> getPopDataHashMap() {
+        return popDataHashMap;
     }
 
     protected Color getColor(EntityPlayer entity) {
-        if (entity.equals(mc.player)) {
+        if (entity == mc.player) {
             return selfColor.getValue();
         } else if (Managers.FRIENDS.contains(entity)) {
             return friendColor.getValue();
@@ -65,7 +61,7 @@ public class PopChams extends BlockESPModule
     }
 
     protected Color getOutlineColor(EntityPlayer entity) {
-        if (entity.equals(mc.player)) {
+        if (entity == mc.player) {
             return selfOutline.getValue();
         } else if (Managers.FRIENDS.contains(entity)) {
             return friendOutline.getValue();
@@ -80,41 +76,21 @@ public class PopChams extends BlockESPModule
 
     public static class PopData {
         private final EntityPlayer player;
-        private final ModelPlayer model;
         private final long time;
-        private final float limbSwing;
-        private final float limbSwingAmount;
         private final float yaw;
-        private final float headYaw;
         private final float pitch;
         private final double x;
         private final double y;
         private final double z;
 
-        public PopData(EntityPlayer player, long time, float yaw, float pitch, double x, double y, double z, boolean slim) {
+        public PopData(EntityPlayer player, long time, float yaw, float pitch, double x, double y, double z) {
             this.player = player;
-            this.limbSwing = player.limbSwing;
-            this.limbSwingAmount = player.limbSwingAmount;
-            this.headYaw = player.rotationYawHead;
             this.time = time;
             this.yaw = yaw;
             this.pitch = pitch;
             this.x = x;
-            this.y = y - (player.isSneaking() ? 0.125 : 0);
+            this.y = y;
             this.z = z;
-            this.model = new ModelPlayer(0, slim);
-            this.model.bipedBodyWear.showModel = false;
-            this.model.bipedLeftLegwear.showModel = false;
-            this.model.bipedRightLegwear.showModel = false;
-            this.model.bipedLeftArmwear.showModel = false;
-            this.model.bipedRightArmwear.showModel = false;
-            this.model.bipedHeadwear.showModel = true;
-            this.model.bipedHead.showModel = false;
-            this.model.isSneak = player.isSneaking();
-            this.model.rightArmPose = getArmPose(player, player.getPrimaryHand() == EnumHandSide.RIGHT ? player.getHeldItemMainhand() : player.getHeldItemOffhand());
-            this.model.leftArmPose = getArmPose(player, player.getPrimaryHand() == EnumHandSide.RIGHT ? player.getHeldItemOffhand() : player.getHeldItemMainhand());
-            this.model.swingProgress = player.swingProgress;
-            this.model.setLivingAnimations(player, limbSwing, limbSwingAmount, mc.getRenderPartialTicks());
         }
 
         public EntityPlayer getPlayer() {
@@ -129,20 +105,8 @@ public class PopChams extends BlockESPModule
             return yaw;
         }
 
-        public float getHeadYaw() {
-            return headYaw;
-        }
-
         public float getPitch() {
             return pitch;
-        }
-
-        public float getLimbSwing() {
-            return limbSwing;
-        }
-
-        public float getLimbSwingAmount() {
-            return limbSwingAmount;
         }
 
         public double getX() {
@@ -156,20 +120,5 @@ public class PopChams extends BlockESPModule
         public double getZ() {
             return z;
         }
-
-        public ModelPlayer getModel() {
-            return model;
-        }
-
-        private static ModelBiped.ArmPose getArmPose(EntityPlayer player, ItemStack stack) {
-            if (stack.isEmpty()) {
-                return ModelBiped.ArmPose.EMPTY;
-            }
-            if (stack.getItem() instanceof ItemBow && player.getItemInUseCount() > 0) {
-                return ModelBiped.ArmPose.BOW_AND_ARROW;
-            }
-            return ModelBiped.ArmPose.ITEM;
-        }
-
     }
 }
