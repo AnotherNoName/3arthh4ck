@@ -33,7 +33,7 @@ public abstract class MixinWorldClient
                  "ZLnet/minecraft/util/math/BlockPos" +
                  "$MutableBlockPos;)V",
         at = @At(value = "HEAD"))
-    private boolean showBarrierParticlesHook(boolean holdingBarrier)
+    public boolean showBarrierParticlesHook(boolean holdingBarrier)
     {
         return NO_RENDER.returnIfPresent(NoRender::showBarriers, false)
                 || holdingBarrier;
@@ -41,14 +41,14 @@ public abstract class MixinWorldClient
 
 
     @Inject(method = "onEntityAdded", at = @At("HEAD"))
-    private void onEntityAdded(Entity entity, CallbackInfo info) {
+    public void onEntityAdded(Entity entity, CallbackInfo info) {
         Bus.EVENT_BUS.post(new EntityChunkEvent(
                 Stage.PRE,
                 entity));
     }
 
     @Inject(method = "onEntityRemoved", at = @At("HEAD"))
-    private void onEntityRemoved(Entity entity, CallbackInfo info) {
+    public void onEntityRemoved(Entity entity, CallbackInfo info) {
         Bus.EVENT_BUS.post(new EntityChunkEvent(
                 Stage.POST,
                 entity));

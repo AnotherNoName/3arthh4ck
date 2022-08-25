@@ -141,7 +141,7 @@ public abstract class MixinEntityRenderer implements IEntityRenderer {
             value = "INVOKE",
             target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V",
             remap = false))
-    private void onSetupCameraTransform(final float fovy, final float aspect, final float zNear, final float zFar) {
+    public void onSetupCameraTransform(final float fovy, final float aspect, final float zNear, final float zFar) {
         final AspectRatioEvent event = new AspectRatioEvent(mc.displayWidth / (float) mc.displayHeight);
         Bus.EVENT_BUS.post(event);
         Project.gluPerspective(fovy, event.getAspectRatio(), zNear, zFar);
@@ -153,7 +153,7 @@ public abstract class MixinEntityRenderer implements IEntityRenderer {
             value = "INVOKE",
             target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V",
             remap = false))
-    private void onRenderWorldPass(final float fovy, final float aspect, final float zNear, final float zFar) {
+    public void onRenderWorldPass(final float fovy, final float aspect, final float zNear, final float zFar) {
         final AspectRatioEvent event = new AspectRatioEvent(mc.displayWidth / (float) mc.displayHeight);
         Bus.EVENT_BUS.post(event);
         Project.gluPerspective(fovy, event.getAspectRatio(), zNear, zFar);
@@ -175,7 +175,7 @@ public abstract class MixinEntityRenderer implements IEntityRenderer {
         at = @At(
             value = "INVOKE",
             target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V", remap = false))
-    private void onRenderCloudsCheck(final float fovy, final float aspect, final float zNear, final float zFar) {
+    public void onRenderCloudsCheck(final float fovy, final float aspect, final float zNear, final float zFar) {
         final AspectRatioEvent event = new AspectRatioEvent(mc.displayWidth / (float) mc.displayHeight);
         Bus.EVENT_BUS.post(event);
         Project.gluPerspective(fovy, event.getAspectRatio(), zNear, zFar);
@@ -315,7 +315,7 @@ public abstract class MixinEntityRenderer implements IEntityRenderer {
                     value = "INVOKE",
                     target = "net/minecraft/client/multiplayer/PlayerControllerMP" +
                             ".getBlockReachDistance()F"))
-    private float getBlockReachDistanceHook(PlayerControllerMP controller) {
+    public float getBlockReachDistanceHook(PlayerControllerMP controller) {
         ReachEvent event = new ReachEvent(controller.getBlockReachDistance(),
                 0.0f);
 
@@ -339,7 +339,7 @@ public abstract class MixinEntityRenderer implements IEntityRenderer {
                     value = "INVOKE",
                     target = "net/minecraft/util/math/Vec3d" +
                             ".distanceTo(Lnet/minecraft/util/math/Vec3d;)D"))
-    private double distanceToHook(Vec3d vec3d, Vec3d vec3d1) {
+    public double distanceToHook(Vec3d vec3d, Vec3d vec3d1) {
         return vec3d.distanceTo(vec3d1) - this.lastReach;
     }
 
