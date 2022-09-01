@@ -7,12 +7,10 @@ import me.earth.earthhack.api.setting.settings.ColorSetting;
 import me.earth.earthhack.api.setting.settings.NumberSetting;
 import me.earth.earthhack.impl.managers.Managers;
 import me.earth.earthhack.impl.util.helpers.render.BlockESPModule;
-import me.earth.earthhack.impl.util.render.entity.StaticModelPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class PopChams extends BlockESPModule
 {
@@ -24,17 +22,13 @@ public class PopChams extends BlockESPModule
             register(new ColorSetting("Self-Color", new Color(80, 80, 255, 80)));
     public final ColorSetting selfOutline =
             register(new ColorSetting("Self-Outline", new Color(80, 80, 255, 255)));
-    public final BooleanSetting copyAnimations =
-            register(new BooleanSetting("Copy-Animations", true));
-    public final NumberSetting<Double> yAnimations =
-            register(new NumberSetting<>("Y-Animation", 0., -7., 7.));
     protected final Setting<Boolean> friendPop =
             register(new BooleanSetting("Friend-Pop", false));
     public final ColorSetting friendColor =
             register(new ColorSetting("Friend-Color", new Color(45, 255, 45, 80)));
     public final ColorSetting friendOutline =
             register(new ColorSetting("Friend-Outline", new Color(45, 255, 45, 255)));
-    private final List<PopData> popDataList = new ArrayList<>();
+    private final HashMap<String,PopData> popDataHashMap = new HashMap<>();
 
     public PopChams()
     {
@@ -46,12 +40,18 @@ public class PopChams extends BlockESPModule
         this.unregister(super.height);
     }
 
-    public List<PopData> getPopDataList() {
-        return popDataList;
+    @Override
+    protected void onEnable()
+    {
+        popDataHashMap.clear();
+    }
+
+    public HashMap<String, PopData> getPopDataHashMap() {
+        return popDataHashMap;
     }
 
     protected Color getColor(EntityPlayer entity) {
-        if (entity.equals(mc.player)) {
+        if (entity == mc.player) {
             return selfColor.getValue();
         } else if (Managers.FRIENDS.contains(entity)) {
             return friendColor.getValue();
@@ -61,7 +61,7 @@ public class PopChams extends BlockESPModule
     }
 
     protected Color getOutlineColor(EntityPlayer entity) {
-        if (entity.equals(mc.player)) {
+        if (entity == mc.player) {
             return selfOutline.getValue();
         } else if (Managers.FRIENDS.contains(entity)) {
             return friendOutline.getValue();
@@ -76,20 +76,21 @@ public class PopChams extends BlockESPModule
 
     public static class PopData {
         private final EntityPlayer player;
-        private final StaticModelPlayer model;
         private final long time;
+        private final float yaw;
+        private final float pitch;
         private final double x;
         private final double y;
         private final double z;
 
-        public PopData(EntityPlayer player, long time, double x, double y, double z, boolean slim) {
+        public PopData(EntityPlayer player, long time, float yaw, float pitch, double x, double y, double z) {
             this.player = player;
             this.time = time;
+            this.yaw = yaw;
+            this.pitch = pitch;
             this.x = x;
-            this.y = y - (player.isSneaking() ? 0.125 : 0);
+            this.y = y;
             this.z = z;
-            this.model = new StaticModelPlayer(player, slim, 0);
-            this.model.disableArmorLayers();
         }
 
         public EntityPlayer getPlayer() {
@@ -98,6 +99,14 @@ public class PopChams extends BlockESPModule
 
         public long getTime() {
             return time;
+        }
+
+        public float getYaw() {
+            return yaw;
+        }
+
+        public float getPitch() {
+            return pitch;
         }
 
         public double getX() {
@@ -110,10 +119,6 @@ public class PopChams extends BlockESPModule
 
         public double getZ() {
             return z;
-        }
-
-        public StaticModelPlayer getModel() {
-            return model;
         }
     }
 }
