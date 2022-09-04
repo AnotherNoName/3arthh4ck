@@ -12,7 +12,10 @@ final class SurroundData extends ObbyData<Surround>
                 "using this on a PingBypass proxy!");
         register(module.movement, "-None well, nothing happens.\n" +
                 "-Static if you move a block this module" +
-                " will disable itself.\n-Limit If you move" +
+                " will disable itself.\n-Y if you move along the Y-Axis this " +
+                "module will disable itself.\n-YPlus similar to Y," +
+                " but only for upwards motion. So in case you are falling" +
+                " down, you are safe.\n-Limit If you move" +
                 " faster than the Speed setting this module" +
                 " won't do anything.\n-Disable if you move" +
                 " faster than the Speed setting this module" +

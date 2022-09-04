@@ -234,6 +234,29 @@ public class Surround extends ObbyModule
                     return false;
                 }
                 break;
+            case Y:
+                currentPos = getPlayerPos();
+                BlockPos startPos = this.startPos;
+                if (startPos != null && startPos.getY() != currentPos.getY())
+                {
+                    this.disable();
+                    return false;
+                }
+                break;
+            case YPlus:
+                currentPos = getPlayerPos();
+                startPos = this.startPos;
+                if (startPos != null && startPos.getY() < currentPos.getY())
+                {
+                    this.disable();
+                    return false;
+                }
+                else
+                {
+                    this.startPos = currentPos;
+                }
+
+                break;
             case Limit:
                 if (Managers.SPEED.getSpeed() > speed.getValue())
                 {
